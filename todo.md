@@ -48,3 +48,12 @@
 - [x] Update todo items as they are completed
 - [x] Create comprehensive README.md documentation
 - [x] Fix Chrome extension permissions and service worker issues
+
+## UI Enhancement Phase
+
+- [x] Implement manual theme toggle in options.tsx with System/Light/Dark states
+- [x] Add theme persistence with chrome.storage.sync and apply theme classes based on user preference  
+- [x] Implement tag-based filtering with Badge components in popup.tsx - extract unique tags from prompts, add clickable filter UI
+- [x] Display prompt count in header showing "X of Y prompts" to indicate filtering effectiveness
+- [x] Add copy button feedback with visual state changes (check icon) and timeout reset after 2 seconds
+- [x] Polish UI consistency - ensure consistent styling, spacing, and hover states across all components

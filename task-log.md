@@ -137,5 +137,39 @@
 **Status**: Completed
 
 **Action**: Initialized Git repository  
-**Details**: Set up Git repository and connected to remote GitHub repository at https://github.com/Yomudogly/prompts-reader.git  
+**Details**: Set up Git repository and connected to remote GitHub repository at <https://github.com/Yomudogly/prompts-reader.git>  
 **Status**: Ready for execution  
+
+### Theme Toggle System
+
+**Action**: Enhanced options.tsx with comprehensive theme management  
+**Details**: Added manual theme selection with System/Light/Dark options, implemented theme persistence using chrome.storage.sync, created applyTheme function for proper DOM class management, and added visual theme selector with icons  
+**Status**: Completed
+
+**Action**: Integrated theme loading across components  
+**Details**: Added theme application on popup component mount, implemented system theme detection fallback, and ensured consistent theming across extension views  
+**Status**: Completed
+
+### Advanced Filtering and Search Enhancement  
+
+**Action**: Implemented comprehensive tag-based filtering system  
+**Details**: Added unique tag extraction from all prompts, created clickable Badge components for tag selection, implemented multi-tag filtering with clear filters functionality, and added ScrollArea for tag overflow  
+**Status**: Completed
+
+**Action**: Enhanced search functionality  
+**Details**: Extended search to include both filename and content searching, maintained compatibility with tag filtering, and improved combined filtering experience  
+**Status**: Completed
+
+### User Experience Improvements
+
+**Action**: Added copy button feedback with visual states  
+**Details**: Implemented copiedPromptId state tracking, added green check icon feedback on successful copy, configured 2-second timeout for automatic reset, and enhanced user interaction feedback  
+**Status**: Completed
+
+**Action**: Enhanced prompt count display  
+**Details**: Added "X of Y" count display in header, made count responsive to both search and tag filtering, and positioned count for optimal visibility  
+**Status**: Completed
+
+**Action**: Improved UI layout and spacing  
+**Details**: Enhanced search and filter section layout, improved card spacing and hover effects, added clear filters functionality, and maintained consistent styling across components  
+**Status**: Completed

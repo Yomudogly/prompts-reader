@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { CheckCircle, AlertCircle } from 'lucide-react'
+import { CheckCircle, AlertCircle, Sun, Moon, Monitor } from 'lucide-react'
 
 import "@/style.css"
 
@@ -12,20 +12,51 @@ function Options() {
   const [repoUrl, setRepoUrl] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
+  const [theme, setTheme] = useState<'system' | 'light' | 'dark'>('system')
 
   useEffect(() => {
-    // Load saved repository URL on component mount
-    loadSavedRepoUrl()
+    // Load saved repository URL and theme on component mount
+    loadSavedSettings()
   }, [])
 
-  const loadSavedRepoUrl = async () => {
+  const loadSavedSettings = async () => {
     try {
-      const result = await chrome.storage.sync.get(['settings'])
+      const result = await chrome.storage.sync.get(['settings', 'theme'])
       if (result.settings?.repoUrl) {
         setRepoUrl(result.settings.repoUrl)
       }
+      if (result.theme) {
+        setTheme(result.theme)
+        applyTheme(result.theme)
+      } else {
+        // Default to system theme
+        applyTheme('system')
+      }
     } catch (error) {
-      console.error('Failed to load saved repository URL:', error)
+      console.error('Failed to load saved settings:', error)
+    }
+  }
+
+  const applyTheme = (newTheme: 'system' | 'light' | 'dark') => {
+    const html = document.documentElement
+    html.classList.remove('light', 'dark')
+    
+    if (newTheme === 'system') {
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+      html.classList.add(prefersDark ? 'dark' : 'light')
+    } else {
+      html.classList.add(newTheme)
+    }
+  }
+
+  const handleThemeChange = async (newTheme: 'system' | 'light' | 'dark') => {
+    setTheme(newTheme)
+    applyTheme(newTheme)
+    
+    try {
+      await chrome.storage.sync.set({ theme: newTheme })
+    } catch (error) {
+      console.error('Failed to save theme preference:', error)
     }
   }
 
@@ -206,6 +237,41 @@ function Options() {
               {isLoading ? 'Testing...' : 'Test Connection'}
             </Button>
           </CardFooter>
+        </Card>
+
+        {/* Theme Settings Card */}
+        <Card className="rounded-xl border shadow-sm">
+          <CardHeader>
+            <CardTitle className="text-xl">Theme Preferences</CardTitle>
+            <CardDescription>
+              Choose your preferred color scheme for the extension.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <Label className="text-sm font-medium">Color Scheme</Label>
+              <div className="grid grid-cols-3 gap-3">
+                {[
+                  { value: 'system', label: 'System', icon: Monitor },
+                  { value: 'light', label: 'Light', icon: Sun },
+                  { value: 'dark', label: 'Dark', icon: Moon }
+                ].map(({ value, label, icon: Icon }) => (
+                  <Button
+                    key={value}
+                    variant={theme === value ? 'default' : 'outline'}
+                    className="h-16 flex flex-col gap-2 rounded-lg"
+                    onClick={() => handleThemeChange(value as 'system' | 'light' | 'dark')}
+                  >
+                    <Icon className="h-5 w-5" />
+                    <span className="text-sm">{label}</span>
+                  </Button>
+                ))}
+              </div>
+              <p className="text-sm text-muted-foreground">
+                System theme will follow your operating system's appearance settings.
+              </p>
+            </div>
+          </CardContent>
         </Card>
 
         <div className="mt-8 p-6 bg-accent/20 rounded-xl border">
