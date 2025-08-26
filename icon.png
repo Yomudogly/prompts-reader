@@ -1,0 +1,32 @@
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea"/>
+      <stop offset="100%" style="stop-color:#764ba2"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="128" height="128" rx="20" fill="url(#bgGradient)"/>
+  
+  <!-- Document icon -->
+  <g fill="white" opacity="0.9">
+    <!-- Main document -->
+    <path d="M32 24 C30 24 28 26 28 28 L28 100 C28 102 30 104 32 104 L96 104 C98 104 100 102 100 100 L100 40 L84 24 Z"/>
+    
+    <!-- Folded corner -->
+    <path d="M84 24 L84 40 L100 40 Z" fill="white" opacity="0.6"/>
+    
+    <!-- Text lines -->
+    <rect x="36" y="48" width="48" height="3" rx="1.5" fill="white" opacity="0.7"/>
+    <rect x="36" y="56" width="56" height="3" rx="1.5" fill="white" opacity="0.7"/>
+    <rect x="36" y="64" width="52" height="3" rx="1.5" fill="white" opacity="0.7"/>
+    <rect x="36" y="72" width="44" height="3" rx="1.5" fill="white" opacity="0.7"/>
+    <rect x="36" y="80" width="48" height="3" rx="1.5" fill="white" opacity="0.7"/>
+    <rect x="36" y="88" width="40" height="3" rx="1.5" fill="white" opacity="0.7"/>
+  </g>
+  
+  <!-- Search/prompt indicator -->
+  <circle cx="80" cy="84" r="8" fill="#fbbf24" opacity="0.9"/>
+  <path d="M76 84 L84 84 M80 80 L80 88" stroke="white" stroke-width="2" stroke-linecap="round"/>
+</svg>
