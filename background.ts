@@ -16,6 +16,7 @@ console.log('PromptsReader background script loaded')
 // Constants
 const CACHE_DURATION = 24 * 60 * 60 * 1000 // 24 hours in milliseconds
 const SUPPORTED_EXTENSIONS = ['.md', '.txt', '.xml']
+const IGNORED_FILES = ['README.md', 'readme.md', 'Readme.md', 'README.txt', 'readme.txt']
 
 // Install event listener
 chrome.runtime.onInstalled.addListener((details) => {
@@ -174,7 +175,9 @@ async function fetchRepositoryContents(owner: string, repo: string, path: string
   const prompts: Prompt[] = []
   
   for (const item of contents) {
-    if (item.type === 'file' && SUPPORTED_EXTENSIONS.some(ext => item.name.endsWith(ext))) {
+    if (item.type === 'file' && 
+        SUPPORTED_EXTENSIONS.some(ext => item.name.endsWith(ext)) &&
+        !IGNORED_FILES.includes(item.name)) {
       // Fetch file content with API key if available
       const fileHeaders: Record<string, string> = {}
       if (apiKey) {

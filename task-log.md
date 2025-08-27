@@ -195,3 +195,7 @@
 **Action**: Updated GitHub API request handling  
 **Details**: Modified fetchRepositoryContents and fetchPromptsFromGitHub functions to accept optional API key parameter, implemented proper Authorization header handling for both repository metadata and file content requests, maintained backward compatibility for users without API keys  
 **Status**: Completed
+
+**Action**: Added file filtering to ignore README files  
+**Details**: Implemented IGNORED_FILES constant to exclude README.md, readme.md, Readme.md, README.txt, and readme.txt files from being fetched as prompt content, improving content quality by filtering out documentation files  
+**Status**: Completed
