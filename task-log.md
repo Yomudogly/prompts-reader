@@ -173,3 +173,11 @@
 **Action**: Improved UI layout and spacing  
 **Details**: Enhanced search and filter section layout, improved card spacing and hover effects, added clear filters functionality, and maintained consistent styling across components  
 **Status**: Completed
+
+**Action**: Fixed popup scrolling layout  
+**Details**: Updated popup.tsx to make only the content area scrollable while keeping header, search bar, and tags filter fixed at the top. Set fixed height of 600px and used flexbox layout with flex-shrink-0 for fixed sections and flex-1 for scrollable content area  
+**Status**: Completed
+
+**Action**: Added custom scrollbar styling  
+**Details**: Implemented custom CSS scrollbar styles with thin, rounded scrollbars that adapt to light/dark themes. Added webkit-scrollbar styles for Chromium browsers and scrollbar-width/scrollbar-color for Firefox. Applied custom-scrollbar class to both tag filter and main content ScrollArea components  
+**Status**: Completed

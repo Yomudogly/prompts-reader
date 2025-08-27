@@ -183,7 +183,7 @@ function Options() {
           </p>
         </div>
 
-        <Card className="rounded-xl border shadow-sm">
+        <Card className="rounded-xl border shadow-sm mb-8">
           <CardHeader className="pb-6">
             <CardTitle className="text-xl">GitHub Repository Configuration</CardTitle>
             <CardDescription className="text-base">
@@ -210,9 +210,9 @@ function Options() {
             {message && (
               <Alert className={`rounded-lg border-2 ${message.type === 'error' ? 'border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950/30' : 'border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950/30'}`}>
                 {message.type === 'success' ? (
-                  <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
+                  <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400" />
                 ) : (
-                  <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400" />
+                  <AlertCircle className="h-4 w-4 text-red-600 dark:text-red-400" />
                 )}
                 <AlertDescription className={`text-sm font-medium ${message.type === 'error' ? 'text-red-800 dark:text-red-200' : 'text-green-800 dark:text-green-200'}`}>
                   {message.text}
@@ -240,7 +240,7 @@ function Options() {
         </Card>
 
         {/* Theme Settings Card */}
-        <Card className="rounded-xl border shadow-sm">
+        <Card className="rounded-xl border shadow-sm mb-8">
           <CardHeader>
             <CardTitle className="text-xl">Theme Preferences</CardTitle>
             <CardDescription>
@@ -274,7 +274,7 @@ function Options() {
           </CardContent>
         </Card>
 
-        <div className="mt-8 p-6 bg-accent/20 rounded-xl border">
+        <div className="p-6 bg-accent/20 rounded-xl border">
           <h3 className="font-semibold mb-3 text-foreground">How it works:</h3>
           <ul className="space-y-2 text-sm text-muted-foreground">
             <li className="flex items-start gap-2">

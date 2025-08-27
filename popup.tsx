@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react'
-import { Search, Settings, RefreshCw, Copy, ExternalLink, AlertCircle, Filter, X, Check } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Search, Settings, RefreshCw, Copy, ExternalLink, AlertCircle, Check } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -8,14 +8,6 @@ import { Badge } from '@/components/ui/badge'
 import { usePrompts } from '@/hooks/usePrompts'
 
 import "@/style.css"
-
-interface Prompt {
-  id: string
-  filename: string
-  content: string
-  tags: string[]
-  html_url: string
-}
 
 function Popup() {
   const [searchQuery, setSearchQuery] = useState('')
@@ -92,9 +84,9 @@ function Popup() {
   }
 
   return (
-    <div className="w-96 h-[500px] bg-background text-foreground rounded-lg border shadow-sm">
+    <div className="w-96 h-[600px] bg-background text-foreground flex flex-col">
       {/* Header */}
-      <div className="flex justify-between items-center p-4 border-b border-border">
+      <div className="flex justify-between items-center px-4 py-2 flex-shrink-0">
         <h1 className="text-lg font-semibold">PromptsReader</h1>
         <div className="flex items-center gap-2">
           <span className="text-sm text-muted-foreground">
@@ -121,7 +113,7 @@ function Popup() {
       </div>
 
       {/* Search Bar and Filters */}
-      <div className="p-4 border-b border-border space-y-3">
+      <div className="p-4 space-y-3 flex-shrink-0">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
@@ -135,22 +127,7 @@ function Popup() {
         {/* Tags Filter */}
         {allTags.length > 0 && (
           <div className="space-y-3">
-            <div className="flex items-center gap-2">
-              <Filter className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm font-medium">Filter by tags:</span>
-              {selectedTags.length > 0 && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={clearFilters}
-                  className="h-6 px-2 text-xs rounded-md hover:bg-accent"
-                >
-                  Clear all
-                  <X className="h-3 w-3 ml-1" />
-                </Button>
-              )}
-            </div>
-            <ScrollArea className="max-h-20">
+            <ScrollArea className="max-h-20 custom-scrollbar">
               <div className="flex flex-wrap gap-1.5">
                 {allTags.map((tag) => (
                   <Badge
@@ -169,7 +146,7 @@ function Popup() {
       </div>
 
       {/* Content Area */}
-      <div className="flex-1 p-4 overflow-hidden">
+      <div className="flex-1 pl-3 pb-2 overflow-hidden min-h-0">
         {error ? (
           <div className="flex flex-col items-center justify-center h-full text-center p-4">
             <div className="text-destructive mb-4">
@@ -203,7 +180,7 @@ function Popup() {
             )}
           </div>
         ) : (
-          <ScrollArea className="h-full">
+          <ScrollArea className="h-full custom-scrollbar">
             <div className="space-y-3 pr-3">
               {filteredPrompts.map((prompt) => (
                 <Card key={prompt.id} className="rounded-lg hover:shadow-md hover:bg-accent/5 transition-all duration-200 border-border group">
