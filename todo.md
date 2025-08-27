@@ -57,3 +57,11 @@
 - [x] Display prompt count in header showing "X of Y prompts" to indicate filtering effectiveness
 - [x] Add copy button feedback with visual state changes (check icon) and timeout reset after 2 seconds
 - [x] Polish UI consistency - ensure consistent styling, spacing, and hover states across all components
+
+## API Enhancement Phase
+
+- [x] Add optional GitHub API key input field in options.tsx for improved rate limits
+- [x] Implement API key validation to test if the provided key is valid
+- [x] Update background.ts to use API key for GitHub requests when available
+- [x] Enhance rate limits from 60 requests/hour (anonymous) to 5,000 requests/hour (authenticated)
+- [x] Add comprehensive help documentation for API key setup and benefits

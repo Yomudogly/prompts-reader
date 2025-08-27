@@ -79,9 +79,13 @@ async function handleFetchPrompts(repoUrl: string): Promise<Prompt[]> {
       return cached
     }
     
+    // Get API key if available
+    const result = await chrome.storage.sync.get(['apiKey'])
+    const apiKey = result.apiKey
+    
     // Fetch fresh data if not cached or expired
     console.log('Fetching fresh prompts from GitHub')
-    const prompts = await fetchPromptsFromGitHub(repoUrl)
+    const prompts = await fetchPromptsFromGitHub(repoUrl, apiKey)
     
     // Cache the results
     await cachePrompts(prompts, repoUrl)
@@ -96,8 +100,12 @@ async function handleFetchPrompts(repoUrl: string): Promise<Prompt[]> {
 // Function to force refresh prompts (bypass cache)
 async function handleRefreshPrompts(repoUrl: string): Promise<Prompt[]> {
   try {
+    // Get API key if available
+    const result = await chrome.storage.sync.get(['apiKey'])
+    const apiKey = result.apiKey
+    
     console.log('Force refreshing prompts from GitHub')
-    const prompts = await fetchPromptsFromGitHub(repoUrl)
+    const prompts = await fetchPromptsFromGitHub(repoUrl, apiKey)
     
     // Update cache with fresh data
     await cachePrompts(prompts, repoUrl)
@@ -110,7 +118,7 @@ async function handleRefreshPrompts(repoUrl: string): Promise<Prompt[]> {
 }
 
 // Function to fetch prompts from GitHub API
-async function fetchPromptsFromGitHub(repoUrl: string): Promise<Prompt[]> {
+async function fetchPromptsFromGitHub(repoUrl: string, apiKey?: string): Promise<Prompt[]> {
   if (!repoUrl) {
     throw new Error('Repository URL is required')
   }
@@ -125,7 +133,7 @@ async function fetchPromptsFromGitHub(repoUrl: string): Promise<Prompt[]> {
   const cleanRepo = repo.replace(/\.git$/, '') // Remove .git suffix if present
   
   try {
-    const prompts = await fetchRepositoryContents(owner, cleanRepo)
+    const prompts = await fetchRepositoryContents(owner, cleanRepo, '', apiKey)
     console.log(`Fetched ${prompts.length} prompts from ${owner}/${cleanRepo}`)
     return prompts
   } catch (error) {
@@ -144,10 +152,20 @@ async function fetchPromptsFromGitHub(repoUrl: string): Promise<Prompt[]> {
 }
 
 // Recursive function to fetch all files from repository
-async function fetchRepositoryContents(owner: string, repo: string, path: string = ''): Promise<Prompt[]> {
+async function fetchRepositoryContents(owner: string, repo: string, path: string = '', apiKey?: string): Promise<Prompt[]> {
   const url = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`
   
-  const response = await fetch(url)
+  // Prepare headers
+  const headers: Record<string, string> = {
+    'Accept': 'application/vnd.github.v3+json'
+  }
+  
+  // Add authorization header if API key is provided
+  if (apiKey) {
+    headers['Authorization'] = `Bearer ${apiKey}`
+  }
+  
+  const response = await fetch(url, { headers })
   if (!response.ok) {
     throw new Error(`GitHub API error: ${response.status} ${response.statusText}`)
   }
@@ -157,8 +175,13 @@ async function fetchRepositoryContents(owner: string, repo: string, path: string
   
   for (const item of contents) {
     if (item.type === 'file' && SUPPORTED_EXTENSIONS.some(ext => item.name.endsWith(ext))) {
-      // Fetch file content
-      const fileResponse = await fetch(item.download_url)
+      // Fetch file content with API key if available
+      const fileHeaders: Record<string, string> = {}
+      if (apiKey) {
+        fileHeaders['Authorization'] = `Bearer ${apiKey}`
+      }
+      
+      const fileResponse = await fetch(item.download_url, { headers: fileHeaders })
       if (fileResponse.ok) {
         const content = await fileResponse.text()
         
@@ -176,7 +199,7 @@ async function fetchRepositoryContents(owner: string, repo: string, path: string
       }
     } else if (item.type === 'dir') {
       // Recursively fetch directory contents
-      const dirPrompts = await fetchRepositoryContents(owner, repo, item.path)
+      const dirPrompts = await fetchRepositoryContents(owner, repo, item.path, apiKey)
       prompts.push(...dirPrompts)
     }
   }

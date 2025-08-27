@@ -181,3 +181,17 @@
 **Action**: Added custom scrollbar styling  
 **Details**: Implemented custom CSS scrollbar styles with thin, rounded scrollbars that adapt to light/dark themes. Added webkit-scrollbar styles for Chromium browsers and scrollbar-width/scrollbar-color for Firefox. Applied custom-scrollbar class to both tag filter and main content ScrollArea components  
 **Status**: Completed
+
+### GitHub API Integration Enhancement
+
+**Action**: Implemented GitHub API key support for improved rate limits  
+**Details**: Added optional API key input field in options.tsx with secure storage in chrome.storage.sync, implemented API key validation against GitHub's user endpoint, updated background.ts to use Bearer token authentication when API key is provided, enhanced rate limits from 60 to 5,000 requests/hour  
+**Status**: Completed
+
+**Action**: Enhanced options UI with API key management  
+**Details**: Added password-type input field for GitHub personal access token, implemented real-time validation with user feedback, added "Test API Key" and "Generate Token" buttons, provided comprehensive help section with step-by-step token creation instructions  
+**Status**: Completed
+
+**Action**: Updated GitHub API request handling  
+**Details**: Modified fetchRepositoryContents and fetchPromptsFromGitHub functions to accept optional API key parameter, implemented proper Authorization header handling for both repository metadata and file content requests, maintained backward compatibility for users without API keys  
+**Status**: Completed

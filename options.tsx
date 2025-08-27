@@ -10,8 +10,11 @@ import "@/style.css"
 
 function Options() {
   const [repoUrl, setRepoUrl] = useState('')
+  const [apiKey, setApiKey] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [isTestingKey, setIsTestingKey] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
+  const [keyMessage, setKeyMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
   const [theme, setTheme] = useState<'system' | 'light' | 'dark'>('system')
 
   useEffect(() => {
@@ -21,9 +24,12 @@ function Options() {
 
   const loadSavedSettings = async () => {
     try {
-      const result = await chrome.storage.sync.get(['settings', 'theme'])
+      const result = await chrome.storage.sync.get(['settings', 'theme', 'apiKey'])
       if (result.settings?.repoUrl) {
         setRepoUrl(result.settings.repoUrl)
+      }
+      if (result.apiKey) {
+        setApiKey(result.apiKey)
       }
       if (result.theme) {
         setTheme(result.theme)
@@ -90,9 +96,10 @@ function Options() {
     setMessage(null)
 
     try {
-      // Save the repository URL to chrome.storage.sync
+      // Save the repository URL and API key to chrome.storage.sync
       await chrome.storage.sync.set({
-        settings: { repoUrl: repoUrl.trim() }
+        settings: { repoUrl: repoUrl.trim() },
+        apiKey: apiKey.trim() || undefined // Store undefined if empty to remove the key
       })
 
       // Clear the cache to trigger a fresh fetch
@@ -100,7 +107,7 @@ function Options() {
 
       setMessage({
         type: 'success',
-        text: 'Repository URL saved successfully! The extension will fetch prompts from this repository.'
+        text: 'Settings saved successfully! The extension will fetch prompts from this repository.'
       })
     } catch (error) {
       console.error('Failed to save repository URL:', error)
@@ -110,6 +117,57 @@ function Options() {
       })
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const handleTestApiKey = async () => {
+    if (!apiKey.trim()) {
+      setKeyMessage({ type: 'error', text: 'Please enter an API key first.' })
+      return
+    }
+
+    setIsTestingKey(true)
+    setKeyMessage(null)
+
+    try {
+      // Test the GitHub API key by making a request to the user endpoint
+      const response = await fetch('https://api.github.com/user', {
+        headers: {
+          'Authorization': `Bearer ${apiKey.trim()}`,
+          'Accept': 'application/vnd.github.v3+json'
+        }
+      })
+      
+      if (response.ok) {
+        const userData = await response.json()
+        setKeyMessage({
+          type: 'success',
+          text: `API key is valid! Authenticated as: ${userData.login}`
+        })
+      } else if (response.status === 401) {
+        setKeyMessage({
+          type: 'error',
+          text: 'Invalid API key. Please check your GitHub personal access token.'
+        })
+      } else if (response.status === 403) {
+        setKeyMessage({
+          type: 'error',
+          text: 'API key does not have sufficient permissions or rate limit exceeded.'
+        })
+      } else {
+        setKeyMessage({
+          type: 'error',
+          text: 'Failed to validate API key. Please try again later.'
+        })
+      }
+    } catch (error) {
+      console.error('API key validation failed:', error)
+      setKeyMessage({
+        type: 'error',
+        text: 'Network error. Please check your internet connection.'
+      })
+    } finally {
+      setIsTestingKey(false)
     }
   }
 
@@ -207,6 +265,57 @@ function Options() {
               </p>
             </div>
 
+            <div className="space-y-3">
+              <Label htmlFor="api-key" className="text-sm font-medium">
+                GitHub API Key <span className="text-muted-foreground font-normal">(Optional)</span>
+              </Label>
+              <Input
+                id="api-key"
+                type="password"
+                placeholder="ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                value={apiKey}
+                onChange={(e) => setApiKey(e.target.value)}
+                className="rounded-lg h-11 text-base font-mono"
+              />
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground">
+                  Personal access token for higher rate limits (5,000 requests/hour vs 60 requests/hour)
+                </p>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleTestApiKey}
+                    disabled={isTestingKey || !apiKey.trim()}
+                    className="rounded-lg h-9 px-4 text-xs"
+                  >
+                    {isTestingKey ? 'Testing...' : 'Test API Key'}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => window.open('https://github.com/settings/tokens', '_blank')}
+                    className="rounded-lg h-9 px-4 text-xs"
+                  >
+                    Generate Token
+                  </Button>
+                </div>
+              </div>
+              
+              {keyMessage && (
+                <Alert className={`rounded-lg border-2 ${keyMessage.type === 'error' ? 'border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950/30' : 'border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950/30'}`}>
+                  {keyMessage.type === 'success' ? (
+                    <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400" />
+                  ) : (
+                    <AlertCircle className="h-4 w-4 text-red-600 dark:text-red-400" />
+                  )}
+                  <AlertDescription className={`text-sm font-medium ${keyMessage.type === 'error' ? 'text-red-800 dark:text-red-200' : 'text-green-800 dark:text-green-200'}`}>
+                    {keyMessage.text}
+                  </AlertDescription>
+                </Alert>
+              )}
+            </div>
+
             {message && (
               <Alert className={`rounded-lg border-2 ${message.type === 'error' ? 'border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950/30' : 'border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950/30'}`}>
                 {message.type === 'success' ? (
@@ -293,7 +402,20 @@ function Options() {
               <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-shrink-0"></div>
               <span>You can manually refresh the cache using the refresh button in the popup</span>
             </li>
+            <li className="flex items-start gap-2">
+              <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-shrink-0"></div>
+              <span><strong>API Key Benefits:</strong> Without a key, you're limited to 60 requests/hour. With a personal access token, you get 5,000 requests/hour and better performance for large repositories</span>
+            </li>
           </ul>
+          <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-200 dark:border-blue-800">
+            <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2">Creating a GitHub Personal Access Token:</h4>
+            <ol className="space-y-1 text-sm text-blue-800 dark:text-blue-200">
+              <li>1. Go to GitHub Settings → Developer settings → Personal access tokens</li>
+              <li>2. Click "Generate new token (classic)"</li>
+              <li>3. Select "public_repo" scope (read access to public repositories)</li>
+              <li>4. Copy and paste the token into the API key field above</li>
+            </ol>
+          </div>
         </div>
       </div>
     </div>
