@@ -199,3 +199,7 @@
 **Action**: Added file filtering to ignore README files  
 **Details**: Implemented IGNORED_FILES constant to exclude README.md, readme.md, Readme.md, README.txt, and readme.txt files from being fetched as prompt content, improving content quality by filtering out documentation files  
 **Status**: Completed
+
+**Action**: Implemented default repository for immediate extension value  
+**Details**: Added DEFAULT_REPO_URL constant pointing to <https://github.com/Yomudogly/awesome-ai-prompts>, updated install event to set default repository on fresh installs, modified fetch functions to fallback to default repo when no URL provided, added "Use Default Repository" button in options UI for easy access to curated prompt collection  
+**Status**: Completed

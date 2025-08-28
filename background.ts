@@ -17,6 +17,7 @@ console.log('PromptsReader background script loaded')
 const CACHE_DURATION = 24 * 60 * 60 * 1000 // 24 hours in milliseconds
 const SUPPORTED_EXTENSIONS = ['.md', '.txt', '.xml']
 const IGNORED_FILES = ['README.md', 'readme.md', 'Readme.md', 'README.txt', 'readme.txt']
+const DEFAULT_REPO_URL = 'https://github.com/Yomudogly/awesome-ai-prompts'
 
 // Install event listener
 chrome.runtime.onInstalled.addListener((details) => {
@@ -26,9 +27,10 @@ chrome.runtime.onInstalled.addListener((details) => {
   if (details.reason === 'install') {
     chrome.storage.sync.set({
       settings: {
-        repoUrl: ''
+        repoUrl: DEFAULT_REPO_URL
       }
     })
+    console.log('Default repository URL set:', DEFAULT_REPO_URL)
   }
 })
 
@@ -73,8 +75,11 @@ if (chrome.commands && chrome.commands.onCommand) {
 // Main function to handle prompt fetching with caching
 async function handleFetchPrompts(repoUrl: string): Promise<Prompt[]> {
   try {
+    // Use default repository if no URL is provided
+    const targetRepoUrl = repoUrl || DEFAULT_REPO_URL
+    
     // Check cache first
-    const cached = await getCachedPrompts(repoUrl)
+    const cached = await getCachedPrompts(targetRepoUrl)
     if (cached) {
       console.log('Returning cached prompts')
       return cached
@@ -86,10 +91,10 @@ async function handleFetchPrompts(repoUrl: string): Promise<Prompt[]> {
     
     // Fetch fresh data if not cached or expired
     console.log('Fetching fresh prompts from GitHub')
-    const prompts = await fetchPromptsFromGitHub(repoUrl, apiKey)
+    const prompts = await fetchPromptsFromGitHub(targetRepoUrl, apiKey)
     
     // Cache the results
-    await cachePrompts(prompts, repoUrl)
+    await cachePrompts(prompts, targetRepoUrl)
     
     return prompts
   } catch (error) {
@@ -101,15 +106,18 @@ async function handleFetchPrompts(repoUrl: string): Promise<Prompt[]> {
 // Function to force refresh prompts (bypass cache)
 async function handleRefreshPrompts(repoUrl: string): Promise<Prompt[]> {
   try {
+    // Use default repository if no URL is provided
+    const targetRepoUrl = repoUrl || DEFAULT_REPO_URL
+    
     // Get API key if available
     const result = await chrome.storage.sync.get(['apiKey'])
     const apiKey = result.apiKey
     
     console.log('Force refreshing prompts from GitHub')
-    const prompts = await fetchPromptsFromGitHub(repoUrl, apiKey)
+    const prompts = await fetchPromptsFromGitHub(targetRepoUrl, apiKey)
     
     // Update cache with fresh data
-    await cachePrompts(prompts, repoUrl)
+    await cachePrompts(prompts, targetRepoUrl)
     
     return prompts
   } catch (error) {
@@ -120,12 +128,15 @@ async function handleRefreshPrompts(repoUrl: string): Promise<Prompt[]> {
 
 // Function to fetch prompts from GitHub API
 async function fetchPromptsFromGitHub(repoUrl: string, apiKey?: string): Promise<Prompt[]> {
-  if (!repoUrl) {
+  // Use default repository if no URL is provided
+  const targetRepoUrl = repoUrl || DEFAULT_REPO_URL
+  
+  if (!targetRepoUrl) {
     throw new Error('Repository URL is required')
   }
   
   // Extract owner and repo from URL
-  const match = repoUrl.match(/github\.com\/([^\/]+)\/([^\/]+)/)
+  const match = targetRepoUrl.match(/github\.com\/([^\/]+)\/([^\/]+)/)
   if (!match) {
     throw new Error('Invalid GitHub repository URL')
   }

@@ -8,6 +8,8 @@ import { CheckCircle, AlertCircle, Sun, Moon, Monitor } from 'lucide-react'
 
 import "@/style.css"
 
+const DEFAULT_REPO_URL = 'https://github.com/Yomudogly/awesome-ai-prompts'
+
 function Options() {
   const [repoUrl, setRepoUrl] = useState('')
   const [apiKey, setApiKey] = useState('')
@@ -171,6 +173,14 @@ function Options() {
     }
   }
 
+  const handleUseDefaultRepo = async () => {
+    setRepoUrl(DEFAULT_REPO_URL)
+    setMessage({
+      type: 'success',
+      text: `Using default repository: ${DEFAULT_REPO_URL}`
+    })
+  }
+
   const handleTestConnection = async () => {
     if (!repoUrl.trim()) {
       setMessage({ type: 'error', text: 'Please enter a repository URL first.' })
@@ -329,7 +339,7 @@ function Options() {
               </Alert>
             )}
           </CardContent>
-          <CardFooter className="flex gap-3 pt-6">
+          <CardFooter className="flex flex-wrap gap-3 pt-6">
             <Button
               onClick={handleSave}
               disabled={isLoading}
@@ -344,6 +354,14 @@ function Options() {
               className="rounded-lg h-11 px-6 font-medium"
             >
               {isLoading ? 'Testing...' : 'Test Connection'}
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={handleUseDefaultRepo}
+              disabled={isLoading}
+              className="rounded-lg h-11 px-6 font-medium"
+            >
+              Use Default Repository
             </Button>
           </CardFooter>
         </Card>
@@ -386,6 +404,10 @@ function Options() {
         <div className="p-6 bg-accent/20 rounded-xl border">
           <h3 className="font-semibold mb-3 text-foreground">How it works:</h3>
           <ul className="space-y-2 text-sm text-muted-foreground">
+            <li className="flex items-start gap-2">
+              <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-shrink-0"></div>
+              <span><strong>Default Repository:</strong> The extension comes pre-configured with a curated collection of AI prompts for immediate use</span>
+            </li>
             <li className="flex items-start gap-2">
               <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-shrink-0"></div>
               <span>The extension fetches prompt files (.md, .xml, .txt) from your public GitHub repository</span>
