@@ -16,7 +16,12 @@ console.log('PromptsReader background script loaded')
 // Constants
 const CACHE_DURATION = 24 * 60 * 60 * 1000 // 24 hours in milliseconds
 const SUPPORTED_EXTENSIONS = ['.md', '.txt', '.xml']
-const IGNORED_FILES = ['README.md', 'readme.md', 'Readme.md', 'README.txt', 'readme.txt']
+const IGNORED_FILES = [
+  'README.md', 'readme.md', 'Readme.md', 'README.txt', 'readme.txt',
+  'LICENSE', 'license', 'License', 'LICENSE.md', 'license.md',
+  '.gitignore', '.gitattributes', 'CHANGELOG.md', 'changelog.md',
+  'CONTRIBUTING.md', 'contributing.md', 'CODE_OF_CONDUCT.md'
+]
 const DEFAULT_REPO_URL = 'https://github.com/Yomudogly/awesome-ai-prompts'
 
 // Install event listener

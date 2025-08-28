@@ -23,6 +23,14 @@ interface UsePromptsReturn {
 // Cache expiration time: 24 hours in milliseconds
 const CACHE_EXPIRATION_TIME = 24 * 60 * 60 * 1000
 
+// Files to ignore when fetching prompts (same as background.ts)
+const IGNORED_FILES = [
+  'README.md', 'readme.md', 'Readme.md', 'README.txt', 'readme.txt',
+  'LICENSE', 'license', 'License', 'LICENSE.md', 'license.md',
+  '.gitignore', '.gitattributes', 'CHANGELOG.md', 'changelog.md',
+  'CONTRIBUTING.md', 'contributing.md', 'CODE_OF_CONDUCT.md'
+]
+
 export function usePrompts(): UsePromptsReturn {
   const [prompts, setPrompts] = useState<Prompt[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -149,9 +157,10 @@ async function fetchRepositoryContents(
 
   for (const item of contents) {
     if (item.type === 'file') {
-      // Check if the file is a supported prompt file
+      // Check if the file is a supported prompt file and not in the ignored list
       const filename = item.name.toLowerCase()
-      if (filename.endsWith('.md') || filename.endsWith('.txt') || filename.endsWith('.xml')) {
+      if ((filename.endsWith('.md') || filename.endsWith('.txt') || filename.endsWith('.xml')) &&
+          !IGNORED_FILES.includes(item.name)) {
         try {
           // Fetch the file content
           const fileResponse = await fetch(item.download_url)

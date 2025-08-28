@@ -203,3 +203,7 @@
 **Action**: Implemented default repository for immediate extension value  
 **Details**: Added DEFAULT_REPO_URL constant pointing to <https://github.com/Yomudogly/awesome-ai-prompts>, updated install event to set default repository on fresh installs, modified fetch functions to fallback to default repo when no URL provided, added "Use Default Repository" button in options UI for easy access to curated prompt collection  
 **Status**: Completed
+
+**Action**: Synchronized file filtering between background.ts and usePrompts.ts  
+**Details**: Added IGNORED_FILES constant to usePrompts.ts hook to match background.ts filtering, ensuring consistent exclusion of README files, LICENSE files, and other documentation files from prompt list. Updated file filtering logic to check both supported extensions and ignored files list  
+**Status**: Completed
